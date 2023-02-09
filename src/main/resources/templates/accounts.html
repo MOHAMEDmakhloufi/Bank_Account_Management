@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html
+      lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorate="template1"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/myStyleSheet.css}">
+</head>
+<body >
+    <div layout:fragment="content">
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Display An Account (example : c1)</div>
+                <div class="panel-body">
+                    <form class="form-inline" th:action="@{/displayAccount}" method="get">
+                        <div class="form-group">
+                            <label for="code">Account Code :</label>
+                            <input type="text" class="form-control" id="code" placeholder="enter account code" name="code" required >
+                            <button type="submit" class="btn btn-default">OK</button>
+                        </div>
+                        <p th:if="${exception}"> <span class="text-exception" th:text="${exception.getMessage()}"></span></p>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-primary" th:if="${account}">
+                <div class="panel-heading">List Of Operations</div>
+                <div class="panel-body ">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Num</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="o:${operations}">
+                            <td th:text="${o.number}"></td>
+                            <td th:text="${o.getClass().getSimpleName()}"></td>
+                            <td th:text="${o.date}"></td>
+                            <td th:text="${o.amount}"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                    <div class="text-center">
+                        <ul class="pagination ">
+                            <li th:each="p, status:${pages}" th:class="${pageCurrent==status.index ? 'active': ''}">
+                                <a th:href="@{/displayAccount(page=${status.index}, code=${code})}"
+                                   th:text="${status.index}"
+
+                                ></a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6" >
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                <div class="panel panel-primary" th:if="${account}">
+                    <div class="panel-heading">Account Operations</div>
+                    <div class="panel-body ">
+                        <form class="form-inline operation-account" th:action="@{/saveOperation}" method="post">
+                            <div class="form-group">
+                                <label for="code-account">Account Code :</label>
+                                <input type="hidden" class="form-control" id="code-account" name="code" th:value="${code}">
+                                <span th:text="${code}"></span>
+
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="op" value="deposit"
+                                           onchange="document.getElementById('a2').style.visibility='hidden'">Deposit</label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="op" value="withdrawal"
+                                           onchange="document.getElementById('a2').style.visibility='hidden'">Withdrawal</label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="op" value="transfer"
+                                           onchange="document.getElementById('a2').style.visibility='visible'" checked>Transfer</label>
+                            </div>
+                            <br>
+                            <div class="form-group" id="a2">
+                                <label for="account2">Account2 :</label>
+                                <input type="text" class="form-control" id="account2" name="account2" >
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="amount">Amount  :</label>
+                                <input type="number" class="form-control" id="amount" name="amount" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-default">Save</button>
+                            <p > <span class="text-exception" th:text="${#httpServletRequest.getParameter('error')}"></span></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary" th:if="${account}">
+                <div class="panel-heading">Account Information</div>
+                <div class="panel-body">
+                    <p>
+                        <span class="text-header">Customer      :</span> <span th:text="${account.customer.name}"></span>
+                    </p>
+                    <p>
+                        <span class="text-header">Code          :</span> <span th:text="${account.code}"></span>
+                    </p>
+                    <p>
+                        <span class="text-header">Balance       :</span> <span th:text="${account.balance}"></span>
+                    </p>
+                    <p>
+                        <span class="text-header">Creation Date :</span> <span th:text="${account.creationDate}"></span>
+                    </p>
+                    <p>
+                        <span class="text-header">Type          :</span> <span th:text="${account.getClass().getSimpleName()}"></span>
+                    </p>
+                    <p th:if="${currentAccount}">
+                        <span class="text-header">Overdraft     :</span> <span th:text="${currentAccount.overdraft}"></span>
+                    </p>
+                    <p th:if="${savingAccount}">
+                        <span class="text-header">InterestRate   :</span> <span th:text="${savingAccount.interestRate}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

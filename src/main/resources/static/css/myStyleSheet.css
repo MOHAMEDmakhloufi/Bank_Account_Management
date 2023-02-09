@@ -1,0 +1,15 @@
+.panel p .text-header{
+    font-weight: bold;
+}
+.panel p .text-exception{
+    color: red;
+}
+.panel .form-group{
+    margin-top: 10px;
+    margin-bottom: 10px ;
+}
+
+.operation-account .form-control {
+
+    height: 25px !important;
+}
